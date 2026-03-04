@@ -7,20 +7,33 @@ on:
             - '*'
 jobs:
     unit-test:
-        container: cuaesd/aesd-autotest:24-unit-test
         runs-on: self-hosted
         steps:
           - uses: actions/checkout@v4
           - name: Checkout submodules
             run : git submodule update --init --recursive
           - name: Run unit test
-            run: ./unit-test.sh
+            run: |
+              docker run --rm \
+                --platform linux/amd64 \
+                -v ${{ github.workspace }}:${{ github.workspace }} \
+                -w ${{ github.workspace }} \
+                --user $(id -u):$(id -g) \
+                cuaesd/aesd-autotest:24-unit-test \
+                ./unit-test.sh 
+            
     full-test:
-        container: cuaesd/aesd-autotest:24-assignment1
         runs-on: self-hosted
         steps:
           - uses: actions/checkout@v4
           - name: Checkout submodules
             run : git submodule update --init --recursive
           - name: Run full test
-            run: ./full-test.sh
+            run: |
+              docker run --rm \
+                --platform linux/amd64 \
+                -v ${{ github.workspace }}:${{ github.workspace }} \
+                -w ${{ github.workspace }} \
+                --user $(id -u):$(id -g) \
+                cuaesd/aesd-autotest:24-assignment1 \
+                ./full-test.sh 
